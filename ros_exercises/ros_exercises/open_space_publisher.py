@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import Float32
+from custom_msgs.msg import OpenSpace
 from sensor_msgs.msg import LaserScan
 
 import numpy as np
@@ -12,8 +12,9 @@ class SpacePublisher(Node):
 
     def __init__(self):
         super().__init__('open_space_publisher')
-        self.distance_publisher = self.create_publisher(Float32, 'open_space/distance', 10)
-        self.angle_publisher = self.create_publisher(Float32, 'open_space/angle', 10)
+        self.publisher_ = self.create_publisher(OpenSpace, 'open_space', 10)
+        # self.distance_publisher = self.create_publisher(Float32, 'open_space/distance', 10)
+        # self.angle_publisher = self.create_publisher(Float32, 'open_space/angle', 10)
         self.subscription = self.create_subscription(
             LaserScan,
             'fake_scan',
@@ -32,12 +33,10 @@ class SpacePublisher(Node):
         self.get_logger().info('received msg: "%.2f"' % self.distance)
     
     def timer_callback(self):
-        dist_msg = Float32() 
-        angle_msg = Float32()
-        dist_msg.data = self.distance
-        angle_msg.data = self.angle 
-        self.distance_publisher.publish(dist_msg)
-        self.angle_publisher.publish(angle_msg)
+        space_msg = OpenSpace()
+        space_msg.distance = self.distance
+        space_msg.angle = self.angle 
+        self.publisher_.publish(space_msg)
         self.get_logger().info('Published msg: "%.2f"' % self.distance)
 
         
