@@ -12,12 +12,21 @@ class SpacePublisher(Node):
 
     def __init__(self):
         super().__init__('open_space_publisher')
-        self.publisher_ = self.create_publisher(OpenSpace, 'open_space', 10)
+
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('publish_topic', "open_space"),
+                ('subscribe_topic', "fake_scan"),
+            ]
+        )
+
+        self.publisher_ = self.create_publisher(OpenSpace, self.get_parameter('publish_topic').value, 10)
         # self.distance_publisher = self.create_publisher(Float32, 'open_space/distance', 10)
         # self.angle_publisher = self.create_publisher(Float32, 'open_space/angle', 10)
         self.subscription = self.create_subscription(
             LaserScan,
-            'fake_scan',
+            self.get_parameter('subscribe_topic').value,
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
